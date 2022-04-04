@@ -9,7 +9,7 @@ class Backtrack:
 
         def recursive_backtrack(i, j):
             if problem.variables[i][j].value == 'x':
-                for va in problem.variables[i][j].field:
+                for va in problem.variables[i][j].domain:
                     problem.update_value(i, j, va)
                     self._steps += 1
                     if problem.check_restrictions(i, j):

@@ -1,4 +1,4 @@
 class Variable:
-    def __init__(self, value, field):
-        self.field = field
+    def __init__(self, value, domain):
+        self.domain = domain
         self.value = value

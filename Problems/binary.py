@@ -83,11 +83,11 @@ class Binary:
         self.horizontal_lines[i] = self.get_line(i)
         self.vertical_lines[j] = self.get_line(j, vertical=True)
         if value != 'x':
-            self.variables[i][j].field = [value]
+            self.variables[i][j].domain = [value]
         else:
-            self.variables[i][j].field = [0, 1]
+            self.variables[i][j].domain = [0, 1]
 
-    def initiate_fields(self):
+    def initiate_domains(self):
         for i, line in enumerate(self.variables):
             for j, vari in enumerate(line):
                 if vari.value != 'x':
@@ -128,59 +128,59 @@ class Binary:
 
     def _update_value_triple_helper_long(self, value, i, i_mod1, i_mod2, i_mod1r, j, j_mod1, j_mod2, j_mod1r):
         if self.variables[i + i_mod2][j + j_mod2].value == value:
-            if value in self.variables[i + i_mod1][j + j_mod1].field:
-                self.variables[i + i_mod1][j + j_mod1].field.remove(value)
-                if not self.variables[i + i_mod1][j + j_mod1].field:
+            if value in self.variables[i + i_mod1][j + j_mod1].domain:
+                self.variables[i + i_mod1][j + j_mod1].domain.remove(value)
+                if not self.variables[i + i_mod1][j + j_mod1].domain:
                     return False
         elif self.variables[i + i_mod1][j + j_mod1].value == value:
-            if value in self.variables[i + i_mod2][j + j_mod2].field:
-                self.variables[i + i_mod2][j + j_mod2].field.remove(value)
-                if not self.variables[i + i_mod2][j + j_mod2].field:
+            if value in self.variables[i + i_mod2][j + j_mod2].domain:
+                self.variables[i + i_mod2][j + j_mod2].domain.remove(value)
+                if not self.variables[i + i_mod2][j + j_mod2].domain:
                     return False
             if (self.size - 1 > j > 0 and j_mod1r) or (self.size - 1 > i > 0 and i_mod1r):
-                if value in self.variables[i + i_mod1r][j + j_mod1r].field:
-                    self.variables[i + i_mod1r][j + j_mod1r].field.remove(value)
-                    if not self.variables[i + i_mod1r][j + j_mod1r].field:
+                if value in self.variables[i + i_mod1r][j + j_mod1r].domain:
+                    self.variables[i + i_mod1r][j + j_mod1r].domain.remove(value)
+                    if not self.variables[i + i_mod1r][j + j_mod1r].domain:
                         return False
         return True
 
     def _update_value_triple_helper_short(self, value, i, i_mod, j, j_mod):
         if self.variables[i + i_mod][j + j_mod].value == value:
-            if value in self.variables[i - i_mod][j - j_mod].field:
-                self.variables[i - i_mod][j - j_mod].field.remove(value)
-                if not self.variables[i - i_mod][j - j_mod].field:
+            if value in self.variables[i - i_mod][j - j_mod].domain:
+                self.variables[i - i_mod][j - j_mod].domain.remove(value)
+                if not self.variables[i - i_mod][j - j_mod].domain:
                     return False
         return True
 
     def _update_value_line_restriction(self, i, j, value):
         if self.horizontal_lines[i].count(str(value)) == self.size / 2:
             for vari in [v for v in self.variables[i] if v.value == 'x']:
-                if value in vari.field:
-                    vari.field.remove(value)
-                    if not vari.field:
+                if value in vari.domain:
+                    vari.domain.remove(value)
+                    if not vari.domain:
                         return False
         if self.vertical_lines[j].count(str(value)) == self.size / 2:
             for vari in [line[j] for line in self.variables if line[j].value == 'x']:
-                if value in vari.field:
-                    vari.field.remove(value)
-                    if not vari.field:
+                if value in vari.domain:
+                    vari.domain.remove(value)
+                    if not vari.domain:
                         return False
         return True
 
-    def update_fields(self, i, j):
+    def update_domains(self, i, j):
         if self._update_value_triple_value_restriction(i, j, self.variables[i][j].value):
             if self._update_value_line_restriction(i, j, self.variables[i][j].value):
                 return self._check_identity_restriction(i, j)
         return False
 
-    def reset_to_base_fields(self):
+    def reset_to_base_domains(self):
         for line in self.variables:
             for vari in line:
                 if vari == 'x':
-                    vari.field = [0, 1]
+                    vari.domain = [0, 1]
 
-    def print_fields(self):
+    def print_domains(self):
         for line in self.variables:
             for vari in line:
-                print(F'{vari.field!s:8}', end='\t\t')
+                print(F'{vari.domain!s:8}', end='\t\t')
             print()

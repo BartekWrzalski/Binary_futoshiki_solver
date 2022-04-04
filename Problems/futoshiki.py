@@ -121,11 +121,11 @@ class Futoshiki:
         self.horizontal_lines[i] = self.get_line(i)
         self.vertical_lines[j] = self.get_line(j, vertical=True)
         if value != 'x':
-            self.variables[i][j].field = [value]
+            self.variables[i][j].domain = [value]
         else:
-            self.variables[i][j].field = [*range(1, self.size + 1)]
+            self.variables[i][j].domain = [*range(1, self.size + 1)]
 
-    def initiate_fields(self):
+    def initiate_domains(self):
         for i, line in enumerate(self.variables):
             for j, vari in enumerate(line):
                 if vari.value != 'x':
@@ -135,9 +135,9 @@ class Futoshiki:
     def _update_value_line_restriction(self, i, j, value):
         for vari in [v for v in self.variables[i] if v.value == 'x'] + \
                     [line[j] for line in self.variables if line[j].value == 'x']:
-            if value in vari.field:
-                vari.field.remove(value)
-                if not vari.field:
+            if value in vari.domain:
+                vari.domain.remove(value)
+                if not vari.domain:
                     return False
         return True
 
@@ -163,35 +163,35 @@ class Futoshiki:
     def _update_value_dependencies_helper(self, i, j, value, sign, higher=True):
         match sign:
             case '>':
-                for v in deepcopy(self.variables[i][j].field):
+                for v in deepcopy(self.variables[i][j].domain):
                     if v <= value and higher:
-                        self.variables[i][j].field.remove(v)
+                        self.variables[i][j].domain.remove(v)
                     elif v >= value and not higher:
-                        self.variables[i][j].field.remove(v)
+                        self.variables[i][j].domain.remove(v)
             case '<':
-                for v in deepcopy(self.variables[i][j].field):
+                for v in deepcopy(self.variables[i][j].domain):
                     if v >= value and higher:
-                        self.variables[i][j].field.remove(v)
+                        self.variables[i][j].domain.remove(v)
                     elif v <= value and not higher:
-                        self.variables[i][j].field.remove(v)
-        if not self.variables[i][j].field:
+                        self.variables[i][j].domain.remove(v)
+        if not self.variables[i][j].domain:
             return False
         return True
 
-    def update_fields(self, i, j):
+    def update_domains(self, i, j):
         if self._update_value_line_restriction(i, j, self.variables[i][j].value):
             return self._update_value_dependencies_restrictions(i, j, self.variables[i][j].value)
         return False
 
-    def reset_to_base_fields(self):
-        field = [*range(1, self.size + 1)]
+    def reset_to_base_domains(self):
+        domain = [*range(1, self.size + 1)]
         for line in self.variables:
             for vari in line:
                 if vari == 'x':
-                    vari.field = field
+                    vari.domain = domain
 
-    def print_fields(self):
+    def print_domains(self):
         for line in self.variables:
             for vari in line:
-                print(F'{vari.field!s:16}', end='\t\t')
+                print(F'{vari.domain!s:16}', end='\t\t')
             print()
