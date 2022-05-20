@@ -1,5 +1,4 @@
 from Problems import variable
-from copy import deepcopy
 
 
 class Binary:

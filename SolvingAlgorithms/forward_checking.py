@@ -1,13 +1,17 @@
 import math
-from copy import deepcopy
+import pickle
+import time
+
 
 class Forward:
     def __init__(self):
         self._possible_solutions = 0
         self._steps = 0
+        self._start = 0
 
     def forward_checking(self, problem, choose_variable='sequence', choose_value='sequence'):
         problem.initiate_domains()
+        self._start = time.time()
         match choose_variable, choose_value:
             case 'sequence', 'sequence':
                 self._forward_algorithm(problem, self._get_next_variable_from_sequence, self._get_values_in_sequence)
@@ -66,28 +70,32 @@ class Forward:
         self._possible_solutions = 0
         self._steps = 0
 
-        def recursive_forward(vari, i, j):
+        def recursive_forward(i, j):
             for v in value_domain(problem, i, j):
-                bf_var_problem = deepcopy(problem.variables)
+                bf_var_problem = pickle.loads(pickle.dumps(problem.variables))
                 self._steps += 1
                 problem.update_value(i, j, v)
                 if problem.update_domains(i, j):
                     vv, ii, jj = choose_variable(problem)
                     if vv is None:
                         self._possible_solutions += 1
-                        self._print_result(problem)
+                        # self._print_result(problem)
+                        self._print_stats()
                         problem.variables = bf_var_problem
                         return
-                    recursive_forward(vv, ii, jj)
+                    recursive_forward(ii, jj)
                 problem.variables = bf_var_problem
                 problem.update_value(i, j)
             self._steps += 1
 
         va, ix, jx = choose_variable(problem)
-        recursive_forward(va, ix, jx)
+        recursive_forward(ix, jx)
 
     def _print_result(self, problem):
-        print(f'Steps: {self._steps}')
         print(f'Solution: {self._possible_solutions}')
+        print(f'Steps: {self._steps}')
         problem.print()
         print()
+
+    def _print_stats(self):
+        print(f'{self._possible_solutions:5} {self._steps:11}   {round(time.time() - self._start, 3)}')

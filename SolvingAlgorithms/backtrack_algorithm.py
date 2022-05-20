@@ -1,11 +1,16 @@
+import time
+
+
 class Backtrack:
     def __init__(self):
         self._possible_solutions = 0
         self._steps = 0
+        self._start = 0
 
     def backtrack_searching(self, problem):
         self._possible_solutions = 0
         self._steps = 0
+        self._start = time.time()
 
         def recursive_backtrack(i, j):
             if problem.variables[i][j].value == 'x':
@@ -15,7 +20,8 @@ class Backtrack:
                     if problem.check_restrictions(i, j):
                         if i == problem.size - 1 and j == problem.size - 1:
                             self._possible_solutions += 1
-                            self._print_result(problem)
+                            # self._print_result(problem)
+                            self._print_stats()
                             problem.update_value(i, j, 'x')
                             return
                         elif j == problem.size - 1:
@@ -42,3 +48,6 @@ class Backtrack:
         print(f'Solution: {self._possible_solutions}')
         problem.print()
         print()
+
+    def _print_stats(self):
+        print(f'{self._possible_solutions:5} {self._steps:11}   {round(time.time() - self._start, 3)}')
